@@ -1,0 +1,9 @@
+{
+  "name": "crypto-bot-surfer-queue",
+  "version": "1.0.0",
+  "description": "Service for managing a queue of tasks with a delay between them using RxJS",
+  "main": "queue.js",
+  "dependencies": {
+    "rxjs": "^7.4.0"
+  }
+}
