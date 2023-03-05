@@ -4,6 +4,7 @@
   "description": "Service for managing a queue of tasks with a delay between them using RxJS",
   "main": "queue.js",
   "dependencies": {
-    "rxjs": "^7.4.0"
+    "axios": "^0.24.0",
+    "rxjs": "^7.5.4"
   }
 }

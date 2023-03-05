@@ -17,12 +17,13 @@ class Queue {
 
   async processQueue() {
     this.isProcessing = true;
-    while (this.queue$.observers.length > 0) {
-      const task = await this.queue$
-        .pipe(takeUntil(this.queue$), delay(this.interval))
-        .toPromise();
-      await task();
-    }
+    const subscription = this.queue$
+      .pipe(takeUntil(this.queue$))
+      .pipe(delay(this.interval))
+      .subscribe(async (task) => {
+        await task();
+      });
+    await subscription.toPromise();
     this.isProcessing = false;
   }
 }
