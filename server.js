@@ -1,8 +1,10 @@
 const express = require("express");
 const Queue = require("./queue");
 
+const interval = JSON.parse(process.env.QUEUE_URL);
+
 const app = express();
-const queue = new Queue(1000);
+const queue = new Queue(interval);
 
 app.use(express.json());
 
