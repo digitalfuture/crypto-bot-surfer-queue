@@ -8,7 +8,7 @@ const queue = new Queue(interval);
 
 app.use(express.json());
 
-app.post("/tasks", async (req, res) => {
+app.get("/tasks", async (req, res) => {
   const { task } = req.body;
   await queue.push(task);
   res.sendStatus(200);
