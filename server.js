@@ -8,13 +8,13 @@ const queue = new Queue(interval);
 
 app.use(express.json());
 
-app.get("/tasks", async (req, res) => {
+app.post("/tasks", async (req, res) => {
   const { task } = req.body;
   await queue.push(task);
   res.sendStatus(200);
 });
 
-app.post("/healthcheck", async (req, res) => {
+app.get("/healthcheck", async (req, res) => {
   res.sendStatus(200);
 });
 
