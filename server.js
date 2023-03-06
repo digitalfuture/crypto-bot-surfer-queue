@@ -12,6 +12,7 @@ let requestCount = 0;
 app.use(express.json());
 
 app.post("/tasks", async (req, res) => {
+  console.log(`Request: ${requestCount}`);
   requestCount++;
   const { task } = req.body;
   await queue.push(task);
