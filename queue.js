@@ -51,4 +51,4 @@ const add = (request) => {
   return requestQueue$.pipe((addRequest) => addRequest(request));
 };
 
-export { add };
+export default { add };
