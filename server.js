@@ -1,22 +1,23 @@
-const express = require("express");
-const Queue = require("./queue");
-const cron = require("node-cron");
-
-const interval = JSON.parse(process.env.INTERVAL);
+import express from "express";
+import queue from "./queue.js";
+import cron from "node-cron";
 
 const app = express();
-const queue = new Queue(interval);
 
 let requestCount = 0;
 
 app.use(express.json());
 
-app.post("/tasks", async (req, res) => {
-  console.log(`Request: ${requestCount}`);
+app.post("/queue", async (req, res) => {
   requestCount++;
-  const { task } = req.body;
-  await queue.push(task);
-  res.sendStatus(200);
+
+  // Добавляем запрос в очередь
+  const result$ = queue.add(req.body);
+
+  // Отправляем клиенту ответ от целевого адреса, когда он будет готов
+  result$.subscribe((result) => {
+    res.send(result);
+  });
 });
 
 app.get("/healthcheck", async (req, res) => {

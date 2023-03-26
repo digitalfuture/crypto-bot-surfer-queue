@@ -10,22 +10,16 @@ Install dependencies:
 npm install
 ```
 
+Setup environment (example for docker-compose.yml):
+
+```yml
+environment:
+  - DELAY=100
+  - PORT=8080
+```
+
 Start the server:
 
 ```js
 npm start
 ```
-
-Replace port with the desired port number.
-
-POST tasks to the /tasks endpoint:
-
-```sh
-curl --location --request POST 'http://localhost:<port>/tasks' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "task": "<task_data>"
-}'
-```
-
-Replace PORT with the port number you started the server on, and task_data with the data for the task you want to add to the queue.

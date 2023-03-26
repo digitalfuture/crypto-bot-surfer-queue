@@ -1,33 +1,54 @@
-const { Subject } = require("rxjs");
-const { takeUntil, delay } = require("rxjs/operators");
+import { Observable, interval } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import fetch from "node-fetch";
 
-class Queue {
-  constructor(interval) {
-    this.queue$ = new Subject();
-    this.interval = interval;
-    this.isProcessing = false;
-  }
+const delay = JSON.parse(process.env.DELAY);
 
-  async push(task) {
-    this.queue$.next(task);
-    if (!this.isProcessing) {
-      await this.processQueue();
-    }
-  }
+const requestQueue$ = interval(delay).pipe(
+  switchMap(() => {
+    return new Observable((subscriber) => {
+      const queue = [];
 
-  async processQueue() {
-    this.isProcessing = true;
+      const executeRequest = async ({ url, method, headers, body }) => {
+        try {
+          const response = await fetch(url, { method, headers, body });
+          const result = await response.json();
+          subscriber.next(result);
+        } catch (error) {
+          subscriber.error(error);
+        }
+      };
 
-    const subscription = this.queue$
-      .pipe(takeUntil(this.queue$))
-      .pipe(delay(this.interval))
-      .subscribe(async (task) => {
-        await task();
-      });
+      const processQueue = () => {
+        while (queue.length > 0) {
+          const { url, method, headers, body, resultObserver } = queue.shift();
 
-    await subscription.toPromise();
-    this.isProcessing = false;
-  }
-}
+          executeRequest({ url, method, headers, body })
+            .then((result) => {
+              resultObserver.next(result);
+              resultObserver.complete();
+            })
+            .catch((error) => {
+              resultObserver.error(error);
+            });
+        }
+      };
 
-module.exports = Queue;
+      const addRequest = ({ url, method = "GET", headers = {}, body = {} }) => {
+        return new Observable((resultObserver) => {
+          const request = { url, method, headers, body, resultObserver };
+          queue.push(request);
+          processQueue();
+        });
+      };
+
+      subscriber.next(addRequest);
+    });
+  })
+);
+
+const add = (request) => {
+  return requestQueue$.pipe((addRequest) => addRequest(request));
+};
+
+export { add };
