@@ -16,6 +16,7 @@ Setup environment (example for docker-compose.yml):
 environment:
   - DELAY=100
   - PORT=8080
+  - DEBUG_MODE=true
 ```
 
 Start the server:

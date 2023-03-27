@@ -2,6 +2,8 @@ import express from "express";
 import queue from "./queue.js";
 import cron from "node-cron";
 
+const isDebugMode = JSON.parse(process.env.DEBUG_MODE);
+
 const app = express();
 
 let requestCount = 0;
@@ -9,6 +11,8 @@ let requestCount = 0;
 app.use(express.json());
 
 app.post("/queue", async (req, res) => {
+  isDebugMode && console.log(`Request: ${req.headers}`);
+
   requestCount++;
 
   const result$ = queue.add(req.body);
